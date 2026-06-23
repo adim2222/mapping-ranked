@@ -7,16 +7,11 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(builder
 
 var app = builder.Build();
 
-app.MapGet("/products", () =>
+app.MapGet("/register", () =>
 {
-    var products = new[]
-    {
-        new { Id = 1, Name = "Mechanical Keyboard", Price = 120.00 },
-        new { Id = 2, Name = "Wireless Mouse", Price = 80.00 }
-    };
+    Console.WriteLine();
 
-    // Returns a 200 OK status code with the array serialized as JSON
-    return Results.Ok(products);
+    return Results.Ok();
 });
 
 app.Run();
