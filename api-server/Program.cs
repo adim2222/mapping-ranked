@@ -9,8 +9,7 @@ var app = builder.Build();
 
 app.MapGet("/register", () =>
 {
-    Console.WriteLine();
-
+    Console.WriteLine("asdf");
     return Results.Ok();
 });
 
