@@ -1,0 +1,30 @@
+services:
+
+  api-server:
+    container_name: api-server
+    build: ./api-server
+    ports:
+      - "5047:8080"
+    volumes:
+      - api-data:/app/data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Data Source=data/app.db
+
+  web:
+    container_name: web
+    build: ./web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-server
+
+  discord-bot:
+    container_name: discord-bot
+    build: ./discord-bot
+    env_file: ./discord-bot/.env
+    depends_on:
+      - api-server
+
+volumes:
+  api-data:
