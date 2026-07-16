@@ -7,7 +7,7 @@ const OsuAuthorizationButton = () => {
     );
 
     const params = {
-      "client_id": "61252",
+      "client_id": "",
       "redirect_uri": "http://localhost:3000/",
       "response_type": "code",
       "scope": "public identify",
@@ -21,7 +21,9 @@ const OsuAuthorizationButton = () => {
   };
 
   return (
-    <button onClick={authorizeOsu} />
+  <button className="osu-auth-btn" onClick={authorizeOsu}>
+  Login
+  </button>
   )
 };
 

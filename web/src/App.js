@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from './routes/Home/Home';
+import Userpage from './routes/Userpage/Userpage';
 import './App.css';
 
 function App() {
@@ -25,9 +26,11 @@ function App() {
     <div className="App">
       <nav>
         <Link to="/">Home</Link>
+        <Link to="/userpage">Profile</Link>
       </nav>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/userpage" element={<Userpage />} />
       </Routes>
     </div>
   );

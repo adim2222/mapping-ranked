@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/adam/dev/mapping-ranked/api-server.Tests/api-server.Tests.csproj": {}
+    "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server.Tests\\api-server.Tests.csproj": {}
   },
   "projects": {
-    "/home/adam/dev/mapping-ranked/api-server.Tests/api-server.Tests.csproj": {
+    "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server.Tests\\api-server.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/adam/dev/mapping-ranked/api-server.Tests/api-server.Tests.csproj",
+        "projectUniqueName": "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server.Tests\\api-server.Tests.csproj",
         "projectName": "api-server.Tests",
-        "projectPath": "/home/adam/dev/mapping-ranked/api-server.Tests/api-server.Tests.csproj",
-        "packagesPath": "/home/adam/.nuget/packages/",
-        "outputPath": "/home/adam/dev/mapping-ranked/api-server.Tests/obj/",
+        "projectPath": "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server.Tests\\api-server.Tests.csproj",
+        "packagesPath": "C:\\Users\\janbl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/adam/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\janbl\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -24,10 +24,11 @@
         },
         "frameworks": {
           "net10.0": {
+            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {
-              "/home/adam/dev/mapping-ranked/api-server/api-server.csproj": {
-                "projectPath": "/home/adam/dev/mapping-ranked/api-server/api-server.csproj"
+              "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server\\api-server.csproj": {
+                "projectPath": "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server\\api-server.csproj"
               }
             }
           }
@@ -42,10 +43,11 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "Microsoft.NET.Test.Sdk": {
@@ -81,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.108/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",
@@ -359,17 +361,17 @@
         }
       }
     },
-    "/home/adam/dev/mapping-ranked/api-server/api-server.csproj": {
+    "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server\\api-server.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/adam/dev/mapping-ranked/api-server/api-server.csproj",
+        "projectUniqueName": "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server\\api-server.csproj",
         "projectName": "api-server",
-        "projectPath": "/home/adam/dev/mapping-ranked/api-server/api-server.csproj",
-        "packagesPath": "/home/adam/.nuget/packages/",
-        "outputPath": "/home/adam/dev/mapping-ranked/api-server/obj/",
+        "projectPath": "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server\\api-server.csproj",
+        "packagesPath": "C:\\Users\\janbl\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\janbl\\Documents\\mapping-ranked\\api-server\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/adam/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\janbl\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -379,6 +381,7 @@
         },
         "frameworks": {
           "net10.0": {
+            "framework": "net10.0",
             "targetAlias": "net10.0",
             "projectReferences": {}
           }
@@ -393,10 +396,11 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-        "SdkAnalysisLevel": "10.0.100"
+        "SdkAnalysisLevel": "10.0.300"
       },
       "frameworks": {
         "net10.0": {
+          "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
             "Microsoft.EntityFrameworkCore.Sqlite": {
@@ -427,7 +431,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.108/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.301/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",
