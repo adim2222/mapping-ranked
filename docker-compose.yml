@@ -10,12 +10,19 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Data Source=data/app.db
+      - Osu__ClientSecret=${OSU_CLIENT_SECRET}
+      - Jwt__SecretKey=${JWT_SECRET_KEY}
 
   web:
     container_name: web
-    build: ./web
+    build:
+      context: ./web
+      args:
+        REACT_APP_API_URL: http://api-server:8080
     ports:
       - "3000:3000"
+    environment:
+      - REACT_APP_OSU_REDIRECT_URI=http://localhost:3000/
     depends_on:
       - api-server
 
