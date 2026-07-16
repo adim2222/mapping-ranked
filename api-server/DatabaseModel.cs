@@ -7,6 +7,7 @@ public class User
     public int Id { get; set; }
     public long OsuId { get; set; }
     public string Username { get; set; } = string.Empty;
+    public int Elo { get; set; } = 1000;
 }
 
 public class AuthState

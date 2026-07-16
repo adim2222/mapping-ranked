@@ -19,12 +19,14 @@ public class Tests
         using var db = new AppDbContext(options);
         db.Database.EnsureCreated();
 
-        db.Users.Add(new User { Username = "testuser" });
+        db.Users.Add(new User { OsuId = 12345, Username = "testuser" });
         db.SaveChanges();
 
         var user = db.Users.Single(u => u.Username == "testuser");
 
         Assert.NotNull(user);
         Assert.Equal("testuser", user.Username);
+        Assert.Equal(12345, user.OsuId);
+        Assert.Equal(1000, user.Elo);
     }
 }

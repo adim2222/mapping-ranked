@@ -158,18 +158,52 @@ app.MapPost("/authorize", async (AuthorizeRequest request, IHttpClientFactory ht
     return Results.Ok(new { token = tokenString });
 });
 
-app.MapGet("/me", (ClaimsPrincipal user) =>
+app.MapGet("/me", async (ClaimsPrincipal user, AppDbContext db) =>
 {
-    var osuId = user.FindFirst("osuId")?.Value;
-    var username = user.FindFirst(ClaimTypes.Name)?.Value;
-    var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var userId = int.Parse(user.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+    var dbUser = await db.Users.FindAsync(userId);
+    if (dbUser == null) return Results.NotFound();
 
-    return Results.Ok(new { userId, osuId, username });
+    var rank = await db.Users.CountAsync(u => u.Elo > dbUser.Elo) + 1;
+
+    return Results.Ok(new
+    {
+        dbUser.Id,
+        dbUser.OsuId,
+        dbUser.Username,
+        dbUser.Elo,
+        rank,
+    });
 }).RequireAuthorization();
+
+app.MapGet("/leaderboard", async (AppDbContext db) =>
+{
+    var users = await db.Users
+        .OrderByDescending(u => u.Elo)
+        .Select((u, index) => new
+        {
+            rank = index + 1,
+            u.Username,
+            u.OsuId,
+            u.Elo,
+        })
+        .ToListAsync();
+
+    return Results.Ok(users);
+});
+
+app.MapPost("/getUser", async (AppDbContext db, UserLookupRequest request) =>
+{
+    var user = await db.Users.FindAsync(request.Id);
+    if (user == null) return Results.NotFound(new { error = "User does not exist" });
+    return Results.Ok(user);
+});
 
 app.Run();
 
 public record AuthorizeRequest(string Code, string State);
+
+public record UserLookupRequest(int Id);
 
 public class OsuTokenResponse
 {
