@@ -4,8 +4,23 @@ api-server/obj/
 discord-bot/node_modules/
 discord-bot/.env
 
+.env
+.env.local
+.env.*.local
+
+web/.env
+web/.env.local
+web/.env.*.local
+
 .DS_Store
 Thumbs.db
 *.log
 .vscode/
 .idea/
+
+**/bin/
+**/obj/
+
+*.db
+*.db-shm
+*.db-wal

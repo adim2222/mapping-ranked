@@ -1,11 +1,30 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using api_server;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddHttpClient();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]!)),
+        };
+    });
+builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
@@ -16,14 +35,43 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseCors();
-
-app.MapGet("/authorize", async (string? code, IHttpClientFactory httpClientFactory, IConfiguration configuration) =>
+using (var scope = app.Services.CreateScope())
 {
-    if (string.IsNullOrEmpty(code))
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
+
+app.UseCors();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapGet("/auth/state", async (AppDbContext db) =>
+{
+    var state = Guid.NewGuid().ToString("N");
+    db.AuthStates.Add(new AuthState
     {
-        return Results.BadRequest("Authorization code is missing.");
+        State = state,
+        ExpiresAt = DateTime.UtcNow.AddMinutes(10),
+    });
+    await db.SaveChangesAsync();
+    return Results.Ok(new { state });
+});
+
+app.MapPost("/authorize", async (AuthorizeRequest request, IHttpClientFactory httpClientFactory, IConfiguration configuration, AppDbContext db) =>
+{
+    if (string.IsNullOrEmpty(request.Code) || string.IsNullOrEmpty(request.State))
+    {
+        return Results.BadRequest("Authorization code and state are required.");
     }
+
+    var storedState = await db.AuthStates.FirstOrDefaultAsync(s => s.State == request.State);
+    if (storedState == null || storedState.ExpiresAt < DateTime.UtcNow)
+    {
+        return Results.BadRequest("Invalid or expired state parameter.");
+    }
+
+    db.AuthStates.Remove(storedState);
+    await db.SaveChangesAsync();
 
     var clientId = configuration["Osu:ClientId"] ?? "";
     var clientSecret = configuration["Osu:ClientSecret"] ?? "";
@@ -35,23 +83,105 @@ app.MapGet("/authorize", async (string? code, IHttpClientFactory httpClientFacto
     {
         ["client_id"] = clientId,
         ["client_secret"] = clientSecret,
-        ["code"] = code,
+        ["code"] = request.Code,
         ["grant_type"] = "authorization_code",
         ["redirect_uri"] = redirectUri,
     });
 
-    var response = await httpClient.PostAsync("https://osu.ppy.sh/oauth/token", body);
-    var content = await response.Content.ReadAsStringAsync();
+    var tokenResponse = await httpClient.PostAsync("https://osu.ppy.sh/oauth/token", body);
+    var tokenContent = await tokenResponse.Content.ReadAsStringAsync();
 
-    if (!response.IsSuccessStatusCode)
+    if (!tokenResponse.IsSuccessStatusCode)
     {
-        Console.WriteLine($"Token exchange failed: {content}");
+        Console.WriteLine($"Token exchange failed: {tokenContent}");
         return Results.Problem("Failed to exchange authorization code for token.");
     }
 
-    Console.WriteLine($"Token response: {content}");
+    var osuToken = System.Text.Json.JsonSerializer.Deserialize<OsuTokenResponse>(tokenContent);
+    if (osuToken?.access_token == null)
+    {
+        return Results.Problem("Invalid token response from osu!.");
+    }
 
-    return Results.Ok(new { success = true });
+    httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", osuToken.access_token);
+    var userResponse = await httpClient.GetAsync("https://osu.ppy.sh/api/v2/me");
+    var userContent = await userResponse.Content.ReadAsStringAsync();
+
+    if (!userResponse.IsSuccessStatusCode)
+    {
+        Console.WriteLine($"Failed to fetch osu! user: {userContent}");
+        return Results.Problem("Failed to fetch user information from osu!.");
+    }
+
+    var osuUser = System.Text.Json.JsonSerializer.Deserialize<OsuUserResponse>(userContent);
+    if (osuUser == null)
+    {
+        return Results.Problem("Invalid user response from osu!.");
+    }
+
+    var user = await db.Users.FirstOrDefaultAsync(u => u.OsuId == osuUser.id);
+    if (user == null)
+    {
+        user = new User { OsuId = osuUser.id, Username = osuUser.username ?? "unknown" };
+        db.Users.Add(user);
+    }
+    else
+    {
+        user.Username = osuUser.username ?? user.Username;
+    }
+    await db.SaveChangesAsync();
+
+    var jwtSecret = configuration["Jwt:SecretKey"]!;
+    var jwtIssuer = configuration["Jwt:Issuer"]!;
+    var jwtAudience = configuration["Jwt:Audience"]!;
+    var expirationMinutes = int.Parse(configuration["Jwt:ExpirationMinutes"] ?? "1440");
+
+    var claims = new[]
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim("osuId", user.OsuId.ToString()),
+        new Claim(ClaimTypes.Name, user.Username!),
+    };
+
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
+    var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+    var token = new JwtSecurityToken(
+        issuer: jwtIssuer,
+        audience: jwtAudience,
+        claims: claims,
+        expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
+        signingCredentials: credentials);
+
+    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+    return Results.Ok(new { token = tokenString });
 });
 
+app.MapGet("/me", (ClaimsPrincipal user) =>
+{
+    var osuId = user.FindFirst("osuId")?.Value;
+    var username = user.FindFirst(ClaimTypes.Name)?.Value;
+    var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    return Results.Ok(new { userId, osuId, username });
+}).RequireAuthorization();
+
 app.Run();
+
+public record AuthorizeRequest(string Code, string State);
+
+public class OsuTokenResponse
+{
+    public string? access_token { get; set; }
+    public string? refresh_token { get; set; }
+    public int expires_in { get; set; }
+    public string? token_type { get; set; }
+    public string? scope { get; set; }
+}
+
+public class OsuUserResponse
+{
+    public long id { get; set; }
+    public string? username { get; set; }
+}
