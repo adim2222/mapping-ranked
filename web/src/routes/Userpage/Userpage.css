@@ -1,7 +1,82 @@
+@import url('https://fonts.googleapis.com/css2?family=Geomini:wght@200..800&display=swap');
+
+
+.profile-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: flex-start;
+    gap: 30px;
+    padding: 50px 20px;
+    background-color: #1e1e2e;
+    background-image: radial-gradient(#313244 2px, transparent 2px);
+    background-size: 30px 30px;
+    border-radius: 30px;
+    min-height: 100vh;
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: row;
+    align-items: normal;
+    gap: 30px;
+    background-color: #313244;
+    padding: 30px;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 800px; /* Nie pozwala stronie rozjechać się na ultra-wide monitorach */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
 div {
-    color: black;
+    color: rgb(254, 254, 254);
     font-size: 1.2rem;
     font-weight: bold;
+    font-family: Geomini, Torus, Inter, "Helvetica Neue", Tahoma, Arial, "Hiragino Kaku Gothic ProN", Meiryo, "Microsoft YaHei", "Apple SD Gothic Neo", sans-serif;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 24px;
+    object-fit: cover;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Lekki cień, żeby odstawał od tła */
+}
+
+.elo-gain-loss {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.elo-positive {
+    color: #a6e3a1
+}
+
+.elo-negative {
+    color: #da0f0f
+}
+
+.edit-button {
+    font-family: Geomini, Torus, Inter, "Helvetica Neue", Tahoma, Arial, "Hiragino Kaku Gothic ProN", Meiryo, "Microsoft YaHei", "Apple SD Gothic Neo", sans-serif;
+    color: #cdd6f4;
+    background-color: #1e1e2e;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.edit-button:hover {
     
-    
+    color: #cdd6f4;
+    background-color: #8a0ed7;
+    padding: 10px 20px;
+    border-radius: 10px;
+    transition: all 0.4s ease;
+}
+
+.edit-button-clicked {
+    font-family: Geomini, Torus, Inter, "Helvetica Neue", Tahoma, Arial, "Hiragino Kaku Gothic ProN", Meiryo, "Microsoft YaHei", "Apple SD Gothic Neo", sans-serif;
+    color: #cdd6f4;
+    background-color: #8a0ed7;
+    padding: 10px 20px;
+    border-radius: 10px;
 }

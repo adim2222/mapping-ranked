@@ -3,6 +3,8 @@ import { Routes, Route, Link } from 'react-router-dom';
 import Home from './routes/Home/Home';
 import Userpage from './routes/Userpage/Userpage';
 import './App.css';
+import JudgingPannel from './routes/JudgingPannel/JudgingPannel';
+import Rankings from './routes/Rankings/Rankings';
 
 function App() {
 
@@ -25,12 +27,16 @@ function App() {
   return (
     <div className="App">
       <nav>
-        <Link to="/">Home</Link>
-        <Link to="/userpage">Profile</Link>
+        <Link to="/">Home </Link>
+        <Link to="/userpage">Profile </Link>
+        <Link to="/judging-pannel">Judging </Link>
+        <Link to="/rankings">Rankings </Link>
       </nav>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/userpage" element={<Userpage />} />
+        <Route path="/rankings" element={<Rankings />}  />
+        <Route path="/judging-pannel" element={<JudgingPannel />} />
       </Routes>
     </div>
   );
